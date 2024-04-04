@@ -2,12 +2,34 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.get("/", (req, res) => res.type('html').send(html));
+//app.get("/", (req, res) => res.type('html').send(html));
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
+
+
+const path=require("path");
+
+const multer = require("multer");
+app.use(multer().none());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+const menuRouter = require("./routes/menu.route");
+const userRouter = require("./routes/user.route");
+app.use("/menu", menuRouter);
+app.use("/users", userRouter);
+
+
+app.get("/", (req, res) => {
+  res.json({ message: "You are at the home page!" });
+});//
 
 const html = `
 <!DOCTYPE html>
